@@ -1,19 +1,10 @@
 <?php
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2009 AOE media GmbH <dev@aoemedia.de>
- *  Adapted for later TYPO3 versions by Cast Iron Coding <contact@castironcoding.com>
- *  All rights reserved
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
 namespace CIC\Cleartypo3cache;
+
 use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 if (!defined ('TYPO3_cliMode')) die ('Access denied: CLI only.');
-
 
 /**
  * Class ClearCache
@@ -28,7 +19,7 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 		parent::__construct();
 		$this->cli_options = array_merge($this->cli_options, array());
 		$this->cli_help = array_merge($this->cli_help, array(
-			'name' => 'Clear TYPO3 Cache via CLI',
+			'name' => 'tx_cleartypo3cache_cli_cli',
 			'synopsis' => $this->extKey . ' cache-command',
 			'description' => 'This script can clear the complete TYPO3-cache (attention: CLI-be_user must have the rights (TS: "options.clearCache.all=1" and "options.clearCache.pages=1") to do this)',
 			'examples' => 'typo3/cli_dispatch.phpsh ' . $this->extKey . ' [all|pages]',
@@ -69,23 +60,14 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	 */
 	protected function clearTypo3Cache($cacheCmd) {
 		if($cacheCmd === 'all') {
-			$this->msg('Flushing caches with CacheManager...');
 			GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCaches();
-
-			$this->msg('Destroying all extbase cache tables...');
 			$this->forceDestroyReflectionCache();
-
-			$this->msg('Trashing typo3temp/Cache/*...');
-			$this->forceEmptyTempDir();
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
+				$this->forceEmptyTempDir();
+			}
 		} else {
-			$this->msg('Attempting to flush cache group ' . $cacheCmd . ' with CacheManager');
 			GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCachesInGroup($cacheCmd);
 		}
-		$this->msg('All done');
-	}
-
-	protected function msg($msg) {
-		echo $msg . "\n";
 	}
 
 	/**
@@ -108,8 +90,7 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 			$truncate[] = $row[0];
 		}
 		if (count($truncate)) { foreach($truncate as $table) {
-			$this->msg($table);
-			$GLOBALS['TYPO3_DB']->sql_query("TRUNCATE TABLE `$table`");
+			$GLOBALS['TYPO3_DB']->sql_query("TRUNCATE TABLE $table");
 		}}
 	}
 
