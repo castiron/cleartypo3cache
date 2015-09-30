@@ -75,16 +75,17 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	}
 
 	/**
-	 *
+	 * Move files out of the way to instantly take them out of play.
 	 */
 	protected function forceEmptyTempDir() {
-		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache-off';
+		$offFolder = PATH_site . 'typo3temp/Cache-off';
+		$cmd = 'rm -rf ' . $offFolder;
 		CommandUtility::exec($cmd);
 
-		$cmd = 'mv ' . PATH_site . 'typo3temp/Cache ' . PATH_site . 'typo3temp/Cache-off';
+		$cmd = 'mv ' . PATH_site . 'typo3temp/Cache ' . $offFolder;
 		CommandUtility::exec($cmd);
 
-		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache-off';
+		$cmd = 'rm -rf ' . $offFolder;
 		CommandUtility::exec($cmd);
 	}
 
