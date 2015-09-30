@@ -42,12 +42,16 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 				case 'pages':
 					$this->clearTypo3Cache( $this->getAction() );
 					break;
+				case 'database-only':
+
+					break;
 				default:
 					$this->cli_help();
 					break;
 			} // END switch
 		} catch (Exception $e) {
 			$shellExitCode = 1;
+
 		}
 
 		return $shellExitCode;
@@ -74,7 +78,13 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	 *
 	 */
 	protected function forceEmptyTempDir() {
-		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache/*';
+		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache-off';
+		CommandUtility::exec($cmd);
+
+		$cmd = 'mv ' . PATH_site . 'typo3temp/Cache ' . PATH_site . 'typo3temp/Cache-off';
+		CommandUtility::exec($cmd);
+
+		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache-off';
 		CommandUtility::exec($cmd);
 	}
 
