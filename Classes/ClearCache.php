@@ -48,6 +48,7 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 			} // END switch
 		} catch (Exception $e) {
 			$shellExitCode = 1;
+
 		}
 
 		return $shellExitCode;
@@ -71,10 +72,17 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	}
 
 	/**
-	 *
+	 * Move files out of the way to instantly take them out of play.
 	 */
 	protected function forceEmptyTempDir() {
-		$cmd = 'rm -rf ' . PATH_site . 'typo3temp/Cache/*';
+		$offFolder = PATH_site . 'typo3temp/Cache-off';
+		$cmd = 'rm -rf ' . $offFolder;
+		CommandUtility::exec($cmd);
+
+		$cmd = 'mv ' . PATH_site . 'typo3temp/Cache ' . $offFolder;
+		CommandUtility::exec($cmd);
+
+		$cmd = 'rm -rf ' . $offFolder;
 		CommandUtility::exec($cmd);
 	}
 
