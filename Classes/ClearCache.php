@@ -69,7 +69,25 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 		} else {
 			GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCachesInGroup($cacheCmd);
 		}
+
+		$this->callPostClearHooks($cacheCmd);
 	}
+
+    /**
+     * Call any post-cache-clearing hooks from extensions, etc. This is lifted more or less verbatim from the
+     * DataHandler where it is normally called in the TYPO3 core;
+     *
+     * @param $cacheCmd
+     */
+    protected function callPostClearHooks($cacheCmd) {
+        $dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'])) {
+            $_params = array('cacheCmd' => strtolower($cacheCmd));
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'] as $_funcRef) {
+                GeneralUtility::callUserFunction($_funcRef, $_params, $dataHandler);
+            }
+        }
+    }
 
 	/**
 	 * Move files out of the way to instantly take them out of play.
