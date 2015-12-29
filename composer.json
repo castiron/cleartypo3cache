@@ -1,9 +1,14 @@
 {
-	"name": "castiron/cleartypo3cache",
-	"type": "typo3-cms-extension",
-	"description": "Works with TYPO3 6+",
-	"homepage": "https://github.com/castiron/cleartypo3cache.git",
-	"license": ["GPL-2.0+"],
-	"keywords": ["TYPO3 CMS"]
+  "name": "castiron/cleartypo3cache",
+  "type": "typo3-cms-extension",
+  "description": "Works with TYPO3 6+",
+  "homepage": "https://github.com/castiron/cleartypo3cache.git",
+  "license": ["GPL-2.0+"],
+  "keywords": ["TYPO3 CMS"],
+  "autoload": {
+    "psr-4": {
+      "CIC\\Cleartypo3cache\\": "Classes"
+    }
+  }
 }
 
