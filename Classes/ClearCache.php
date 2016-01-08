@@ -1,8 +1,8 @@
 <?php
 namespace CIC\Cleartypo3cache;
 
-use TYPO3\CMS\Core\Utility\CommandUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use t3lib_utility_Command as CommandUtility;
+use t3lib_div as GeneralUtility;
 
 if (!defined ('TYPO3_cliMode')) die ('Access denied: CLI only.');
 
@@ -11,7 +11,7 @@ if (!defined ('TYPO3_cliMode')) die ('Access denied: CLI only.');
  *
  * @package CIC\Cleartypo3cache
  */
-class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
+class ClearCache extends \t3lib_cli {
 	/**
 	 * constructor
 	 */
@@ -61,13 +61,13 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	 */
 	protected function clearTypo3Cache($cacheCmd) {
 		if($cacheCmd === 'all') {
-			GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCaches();
+			GeneralUtility::makeInstance('t3lib_cache_Manager')->flushCaches();
 			$this->forceDestroyReflectionCache();
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
 				$this->forceEmptyTempDir();
 			}
 		} else {
-			GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCachesInGroup($cacheCmd);
+			GeneralUtility::makeInstance('t3lib_cache_Manager')->flushCachesInGroup($cacheCmd);
 		}
 
 		$this->callPostClearHooks($cacheCmd);
@@ -80,7 +80,7 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
      * @param $cacheCmd
      */
     protected function callPostClearHooks($cacheCmd) {
-        $dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+        $dataHandler = GeneralUtility::makeInstance('t3lib_TCEMain');
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'])) {
             $_params = array('cacheCmd' => strtolower($cacheCmd));
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'] as $_funcRef) {
