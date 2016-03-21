@@ -61,16 +61,31 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
      */
     protected function clearTypo3Cache($cacheCmd) {
         if($cacheCmd === 'all') {
-            GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCaches();
-            $this->forceDestroyReflectionCache();
-            if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
-                $this->forceEmptyTempDir();
-            }
-        } else {
-            GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCachesInGroup($cacheCmd);
+            $this->clearAllCache($cacheCmd);
+            return;
         }
+        $this->clearCacheByCommand($cacheCmd);
+    }
 
+    /**
+     * @param $cacheCmd
+     */
+    protected function clearCacheByCommand($cacheCmd) {
+        GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCachesInGroup($cacheCmd);
         $this->callPostClearHooks($cacheCmd);
+    }
+
+    /**
+     * Clearing all the cache is a bit more nuclear than the other options
+     * @param $cacheCmd
+     */
+    protected function clearAllCache($cacheCmd) {
+        GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->flushCaches();
+        $this->callPostClearHooks($cacheCmd);
+        $this->forceDestroyReflectionCache();
+        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
+            $this->forceEmptyTempDir();
+        }
     }
 
     /**
