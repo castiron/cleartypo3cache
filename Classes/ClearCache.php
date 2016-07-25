@@ -84,7 +84,8 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
         $this->callPostClearHooks($cacheCmd);
         $this->forceDestroyReflectionCache();
         if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
-            $this->forceEmptyTempDir();
+            static::quickDeleteDir('typo3temp/Cache');
+            static::quickDeleteDir('typo3temp/autoload');
         }
     }
 
@@ -105,18 +106,34 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
     }
 
     /**
-     * Move files out of the way to instantly take them out of play.
+     * @param $dir
+     * @return string
      */
-    protected function forceEmptyTempDir() {
-        $offFolder = PATH_site . 'typo3temp/Cache-off';
-        $cmd = 'rm -rf ' . $offFolder;
-        CommandUtility::exec($cmd);
+    protected static function quickDeleteDir($dir) {
+        /**
+         * Only do this inside typo3temp
+         */
+        if (strpos($dir, 'typo3temp') !== 0) {
+            return;
+        }
 
-        $cmd = 'mv ' . PATH_site . 'typo3temp/Cache ' . $offFolder;
-        CommandUtility::exec($cmd);
+        $directory = PATH_site . $dir;
+        $offFolder = "$directory-off";
 
-        $cmd = 'rm -rf ' . $offFolder;
-        CommandUtility::exec($cmd);
+        /**
+         * Make sure the backup folder doesn't exist
+         */
+        CommandUtility::exec('rm -rf ' . $offFolder);
+
+        /**
+         * Move the current folder away to effectively delete it instantly
+         */
+        CommandUtility::exec('mv ' . $directory . ' ' . $offFolder);
+
+        /**
+         * Remove the moved folder now that it's out of circulation
+         */
+        CommandUtility::exec('rm -rf ' . $offFolder);
     }
 
     /**
