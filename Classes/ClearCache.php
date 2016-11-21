@@ -85,7 +85,9 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
         $this->forceDestroyReflectionCache();
         if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
             static::quickDeleteDir('typo3temp/Cache');
-            static::quickDeleteDir('typo3temp/autoload');
+            if (GeneralUtility::compat_version('7.0')) {
+                static::quickDeleteDir('typo3temp/autoload');
+            }
         }
     }
 
