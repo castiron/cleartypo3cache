@@ -8,6 +8,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package CIC\Cleartypo3cache\Service
  */
 class CacheDestroyer {
+
+    static $cacheFilesDir = 'typo3temp/var/Cache';
+
     /**
      * Clear caches
      *
@@ -38,10 +41,7 @@ class CacheDestroyer {
         $this->callPostClearHooks($cacheCmd);
         $this->forceDestroyReflectionCache();
         if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cleartypo3cache']['forceRemoveTempCacheFiles']) {
-            static::quickDeleteDir('typo3temp/Cache');
-            if (GeneralUtility::compat_version('7.0')) {
-                static::quickDeleteDir('typo3temp/autoload');
-            }
+            static::quickDeleteDir(static::$cacheFilesDir);
         }
     }
 

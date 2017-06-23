@@ -4,7 +4,7 @@ namespace CIC\Cleartypo3cache;
 use CIC\Cleartypo3cache\Service\CacheDestroyer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-if (!defined ('TYPO3_cliMode')) die ('Access denied: CLI only.');
+if (TYPO3_MODE !== 'BE') die ('Access denied: CLI only.');
 
 /**
  * Class ClearCache
@@ -21,8 +21,7 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
      * constructor
      */
     public function __construct() {
-        parent::__construct();
-
+        $this->cli_setArguments($_SERVER['argv']);
         $this->cacheDestroyer = GeneralUtility::makeInstance('CIC\Cleartypo3cache\Service\CacheDestroyer');
         $this->cli_options = array_merge($this->cli_options, array());
         $this->cli_help = array_merge($this->cli_help, array(
@@ -59,8 +58,6 @@ class ClearCache extends \TYPO3\CMS\Core\Controller\CommandLineController {
 
         return $shellExitCode;
     }
-
-
 
     /**
      * @return string
