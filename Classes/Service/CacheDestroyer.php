@@ -9,7 +9,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CacheDestroyer {
 
-    static $cacheFilesDir = 'typo3temp/var/Cache';
+    static $cacheFilesDir = 'typo3temp/var/cache';
     static $autoloadCacheDir = 'typo3conf/autoload';
 
     /**
